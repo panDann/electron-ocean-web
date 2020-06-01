@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme: Theme) =>
   }),
 );
 
-export default function PrimarySearchAppBar({className=''}) {
+export default function PrimarySearchAppBar({className='',title=''}) {
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -186,7 +186,7 @@ export default function PrimarySearchAppBar({className=''}) {
             <MenuIcon />
           </IconButton>
           <Typography className={classes.title} variant="h6" noWrap>
-            Material-UI
+            {title}
           </Typography>
           <div className={classes.search}>
             <div className={classes.searchIcon}>

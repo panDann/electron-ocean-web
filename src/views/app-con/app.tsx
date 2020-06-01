@@ -22,6 +22,7 @@ interface IState {
     activeItemIndex: number
     isFoldMenu: boolean
     isHiddenBar: boolean
+    appBarTitle: string
 }
 
 let 
@@ -33,13 +34,14 @@ class App extends React.Component<any, IState> {
         this.state = {
             activeItemIndex: 0,
             isFoldMenu: !!localStorage.getItem(isFoldMenuStorage) || false,
-            isHiddenBar: false
+            isHiddenBar: false,
+            appBarTitle:'记账'
         }
     }
 
-    leapTo(path: string, activeItemIndex: number) {
+    leapTo({path='',label=''}, activeItemIndex: number) {
         const { history } = this.props
-        this.setState({ activeItemIndex })
+        this.setState({ activeItemIndex,appBarTitle:label })
         history.push(path)
     }
     handleBar() {
@@ -57,14 +59,14 @@ class App extends React.Component<any, IState> {
     }
     render(h = React.createElement) {
         // const {children} = this.props
-        const { activeItemIndex, isFoldMenu, isHiddenBar } = this.state
+        const { activeItemIndex, isFoldMenu,appBarTitle, isHiddenBar } = this.state
         return (
             <div className='flex-row'>
                 <Paper className='side_con border-box' style={{ width: isFoldMenu ? $menuFoldWidth : $menuWidth }}>
                     <MenuList autoFocusItem variant='selectedMenu'>
                         {items.map((el, index: number) =>
                             <MenuItem
-                                key={el.path} onClick={() => this.leapTo(el.path, index)}
+                                key={el.path} onClick={() => this.leapTo(el, index)}
                                 classes={activeItemIndex == index && { root: 'active-item' }}
                             >
                                 <ListItemIcon>
@@ -80,7 +82,7 @@ class App extends React.Component<any, IState> {
                     </IconButton>
                 </Paper>
                 <div id='rightCon' className='right-con' onScroll={this.handleBar.bind(this)}>
-                    <RightHeader className={isHiddenBar && 'is-scorlling'} />
+                    <RightHeader title={appBarTitle} className={isHiddenBar && 'is-scorlling'} />
                     <div className='route-view paddinglr1rem'>
                         {/* <Grow
                             in={checked}
