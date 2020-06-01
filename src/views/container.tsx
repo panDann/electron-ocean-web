@@ -1,7 +1,7 @@
 import React from 'react';
 import { Provider, connect } from 'react-redux';
 import { createStore } from 'redux'
-import { HashRouter, Link,Route,Switch } from 'react-router-dom'
+import { HashRouter, Link,Route,Switch,Redirect } from 'react-router-dom'
 import Button from '@material-ui/core/Button';
 
 import Login from '@src/views/login'
@@ -9,15 +9,14 @@ import App from '@src/views/app-con/app'
 import Routes from '@src/views/routes'
 import {homePath,loginPath} from '@src/views/routes/path.ts'
 
-const re = (sta, action) => {
-    switch (action.type) {
-        case 'add':
-            return sta
-    }
-}
+// const re = (sta, action) => {
+//     switch (action.type) {
+//         case 'add':
+//             return sta
+//     }
+// }
 
-const store = createStore(re, { state: { add: 1 } })
-console.log(store.getState());
+// const store = createStore(re, { state: { add: 1 } })
 
 class Container extends React.Component {
     // constructor() {
@@ -30,9 +29,8 @@ class Container extends React.Component {
         return (
             // <Provider store={store}>
                 <HashRouter>
-                    <Link to='/login'><Button>test</Button> </Link>
-                    <Link to='/home'><Button>home</Button> </Link>
-                    <Link to='/home/charge'><Button>charge</Button> </Link>
+                    {/* <Link to={loginPath}><Button>test</Button> </Link> */}
+                    {/* <Redirect  to={homePath}><Button>home</Button> </Redirect> */}
                     <Switch>
                         <Route path={loginPath} exact component={Login} /> 
                         <Route path={homePath}  render={() =>

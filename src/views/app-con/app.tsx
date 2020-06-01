@@ -1,78 +1,95 @@
 import React from 'react';
 import MenuList from '@material-ui/core/MenuList';
-import { ThemeProvider } from '@material-ui/core/styles';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Typography from '@material-ui/core/Typography';
-import DraftsIcon from '@material-ui/icons/Drafts';
-import SendIcon from '@material-ui/icons/Send';
-import PriorityHighIcon from '@material-ui/icons/PriorityHigh';
 import { withRouter } from 'react-router-dom'
-import {chargePath,chargeStatisticalPath} from '@src/views/routes/path'
+import {
+    iconProps,
+    items
+} from './consts'
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import IconButton from '@material-ui/core/IconButton';
+import LastPageIcon from '@material-ui/icons/LastPage';
+import FirstPageRoundedIcon from '@material-ui/icons/FirstPageRounded';
+import RightHeader from '@src/views/app-con/conponents/right-header'
+import { isFoldMenuStorage } from '@src/views/consts/localStorage-variables'
+import Grow from '@material-ui/core/Grow';
+import { $menuFoldWidth, $menuWidth } from "@src/styles/variables.json";
 import './app.styl'
 
 interface IState {
     activeItemIndex: number
+    isFoldMenu: boolean
+    isHiddenBar: boolean
 }
-const theme = {
-    background: 'linear-gradient(45deg, #FE6B8B 30%, #FF8E53 90%)',
-};
 
-const iconProps: any = {
-    fontSize: 'small'
-}
-const items = [
-    {
-        icon: {
-            tag: DraftsIcon,
-        },
-        label: '记账',
-        path: chargePath
-    },
-    {
-        icon: {
-            tag: SendIcon,
-        },
-        label: '账务统计',
-        path: chargeStatisticalPath
-    },
-]
+let 
+    scrollTimer: any = 0
+
 class App extends React.Component<any, IState> {
     constructor(porp: any) {
         super(porp)
         this.state = {
-            activeItemIndex:0
+            activeItemIndex: 0,
+            isFoldMenu: !!localStorage.getItem(isFoldMenuStorage) || false,
+            isHiddenBar: false
         }
     }
-    leapTo(val: string,activeItemIndex:number) {
+
+    leapTo(path: string, activeItemIndex: number) {
         const { history } = this.props
-        this.setState({activeItemIndex})
-        history.push(val)
+        this.setState({ activeItemIndex })
+        history.push(path)
+    }
+    handleBar() {
+
+        if (scrollTimer) clearTimeout(scrollTimer)
+        scrollTimer = setTimeout(() => {
+            let rightCon = document.getElementById('rightCon')
+            if (rightCon.scrollTop == 0) {
+                this.setState({ isHiddenBar: false })
+            } else {
+                this.setState({ isHiddenBar: true })
+            }
+        }, 100);
+
     }
     render(h = React.createElement) {
         // const {children} = this.props
-        const {activeItemIndex} = this.state
+        const { activeItemIndex, isFoldMenu, isHiddenBar } = this.state
         return (
             <div className='flex-row'>
-                <Paper className='side_con border-box'>
-                    <MenuList  autoFocusItem variant='selectedMenu'>
-                        {items.map((el,index:number) => 
-                        <MenuItem 
-                         key={el.path} onClick={() => this.leapTo(el.path,index)}
-                         classes={activeItemIndex==index && {root:'active-item'}}
-                         >
-                            <ListItemIcon>
-                                {
-                                    h(el.icon.tag, iconProps)
-                                }
-                            </ListItemIcon>
-                            <Typography variant="inherit">{el.label}</Typography>
-                        </MenuItem>)}
+                <Paper className='side_con border-box' style={{ width: isFoldMenu ? $menuFoldWidth : $menuWidth }}>
+                    <MenuList autoFocusItem variant='selectedMenu'>
+                        {items.map((el, index: number) =>
+                            <MenuItem
+                                key={el.path} onClick={() => this.leapTo(el.path, index)}
+                                classes={activeItemIndex == index && { root: 'active-item' }}
+                            >
+                                <ListItemIcon>
+                                    {
+                                        h(el.icon.tag, iconProps)
+                                    }
+                                </ListItemIcon>
+                                <Typography variant="inherit">{el.label}</Typography>
+                            </MenuItem>)}
                     </MenuList>
+                    <IconButton className='fold-btn' onClick={() => (this.setState({ isFoldMenu: !isFoldMenu }), localStorage.setItem(isFoldMenuStorage, !isFoldMenu ? '1' : ''))}>
+                        {h(isFoldMenu ? LastPageIcon : FirstPageRoundedIcon, iconProps)}
+                    </IconButton>
                 </Paper>
-                <div>
-                    {this.props.children}
+                <div id='rightCon' className='right-con' onScroll={this.handleBar.bind(this)}>
+                    <RightHeader className={isHiddenBar && 'is-scorlling'} />
+                    <div className='route-view paddinglr1rem'>
+                        {/* <Grow
+                            in={checked}
+                            style={{ transformOrigin: '0 0 0' }}
+                            {...(checked ? { timeout: 1000 } : {})}
+                        > */}
+                            {this.props.children}
+                        {/* </Grow> */}
+                    </div>
                 </div>
             </div>
 

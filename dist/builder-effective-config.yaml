@@ -1,0 +1,7 @@
+directories:
+  output: dist
+  buildResources: build
+appId: maple
+mac:
+  category: Maple
+electronVersion: 9.0.0

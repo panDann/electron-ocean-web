@@ -19,6 +19,7 @@ module.exports = {
     extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.styl'],
     alias:{
       "@src":path('src'),
+      "@config":path('config'),
       "~images":path('src/assets/images'),
     }
   },
