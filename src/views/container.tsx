@@ -1,7 +1,7 @@
 import React from 'react';
 import { Provider, connect } from 'react-redux';
 import { createStore } from 'redux'
-import { HashRouter, Link,Route,Switch,Redirect } from 'react-router-dom'
+import { HashRouter, Link,Route,Switch,Redirect, } from 'react-router-dom'
 import Button from '@material-ui/core/Button';
 
 import Login from '@src/views/login'
@@ -30,7 +30,7 @@ class Container extends React.Component {
             // <Provider store={store}>
                 <HashRouter>
                     {/* <Link to={loginPath}><Button>test</Button> </Link> */}
-                    {/* <Redirect  to={homePath}><Button>home</Button> </Redirect> */}
+                    <Redirect  to={homePath}><Button>home</Button> </Redirect>
                     <Switch>
                         <Route path={loginPath} exact component={Login} /> 
                         <Route path={homePath}  render={() =>

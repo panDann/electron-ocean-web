@@ -3,7 +3,7 @@ import MenuList from '@material-ui/core/MenuList';
 import MenuItem from '@material-ui/core/MenuItem';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { withRouter } from 'react-router-dom'
+import { withRouter,Redirect } from 'react-router-dom'
 import {
     iconProps,
     items
@@ -48,12 +48,7 @@ class App extends React.Component<any, IState> {
 
         if (scrollTimer) clearTimeout(scrollTimer)
         scrollTimer = setTimeout(() => {
-            let rightCon = document.getElementById('rightCon')
-            if (rightCon.scrollTop == 0) {
-                this.setState({ isHiddenBar: false })
-            } else {
-                this.setState({ isHiddenBar: true })
-            }
+            this.setState({ isHiddenBar: document.getElementById('rightCon').scrollTop == 0 })
         }, 100);
 
     }
@@ -62,12 +57,13 @@ class App extends React.Component<any, IState> {
         const { activeItemIndex, isFoldMenu,appBarTitle, isHiddenBar } = this.state
         return (
             <div className='flex-row'>
+                    <Redirect  to={items[0].path}> </Redirect>
                 <Paper className='side_con border-box' style={{ width: isFoldMenu ? $menuFoldWidth : $menuWidth }}>
                     <MenuList autoFocusItem variant='selectedMenu'>
                         {items.map((el, index: number) =>
                             <MenuItem
                                 key={el.path} onClick={() => this.leapTo(el, index)}
-                                classes={activeItemIndex == index && { root: 'active-item' }}
+                                classes={{ root:activeItemIndex == index &&  'active-item' }}
                             >
                                 <ListItemIcon>
                                     {

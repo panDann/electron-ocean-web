@@ -1,9 +1,19 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { makeStyles, createStyles, Theme, } from '@material-ui/core/styles';
 // import Paper from '@material-ui/core/Paper';
 // import Grid from '@material-ui/core/Grid';
-import { TextField, Button, Grid, Paper } from '@material-ui/core';
-
+// import Collapse from '@material-ui/core/Collapse';
+import Alert from '@material-ui/lab/Alert';
+import CloseIcon from '@material-ui/icons/Close';
+import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
+import { TextField, Button, Grid, Paper, Dialog, IconButton } from '@material-ui/core';
+import ConvexCard from '@src/components/convex-card'
+// import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import './index.styl'
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
@@ -22,8 +32,20 @@ interface Categories {
     total: HTMLElement
     profit: HTMLElement
 }
+
+const chargeCategoriesHeader =(addFunc:Function)=> <Grid  className='charge-cat-con'>
+    账务类别
+    <Grid item xs></Grid>
+    <IconButton className='charge-cat-add' onClick={() =>addFunc()}>
+        <AddCircleOutlineIcon />
+    </IconButton>
+</Grid>
 export default function CenteredGrid() {
     const classes = useStyles();
+    const [chargeCategories, setChargeCategories] = useState([{ label: 111, number: 111, id: 11 }])
+    const [todayCharges, setTodayCharges] = useState([])
+    const [addModalVisible, setAaddModalVisible] = useState(false)
+
     const refs: Categories = {
         category: null,
         total: null,
@@ -56,6 +78,12 @@ export default function CenteredGrid() {
 
         // if(e.keyCode)
     }
+    const deleteChargeCategory = (id: number) => {
+
+    }
+    const addChargeCategory=()=>{
+
+    }
     return (
         <div className={classes.root}>
             <Grid container spacing={2}>
@@ -78,12 +106,44 @@ export default function CenteredGrid() {
                     </Paper>
                 </Grid>
                 <Grid item xs={6}>
-                    <Paper className={classes.paper}>
-                        <Button color="primary">账务类别</Button>
-                    </Paper>
+                    <ConvexCard header={chargeCategoriesHeader(addChargeCategory)} color='primary'>
+                        {
+                            chargeCategories.map(el => <Alert className='margintb10' severity='info' icon={<span>{el.number}</span>} action={<IconButton onClick={() => deleteChargeCategory(el.id)}>
+                                <CloseIcon />
+                            </IconButton>}>
+                                {el.label}</Alert>)
+                        }
+                    </ConvexCard>
                 </Grid>
+                <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
+        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            To subscribe to this website, please enter your email address here. We will send updates
+            occasionally.
+          </DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            id="name"
+            label="Email Address"
+            type="email"
+            fullWidth
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={handleClose} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleClose} color="primary">
+            Subscribe
+          </Button>
+        </DialogActions>
+      </Dialog>
                 <Grid item xs={6}>
-                    <Paper className={classes.paper}>xs=12</Paper>
+                    <ConvexCard header='今日记账' color='success'>
+
+                    </ConvexCard>
                 </Grid>
             </Grid>
         </div>
