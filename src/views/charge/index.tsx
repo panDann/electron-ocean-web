@@ -8,11 +8,9 @@ import CloseIcon from '@material-ui/icons/Close';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
 import { TextField, Button, Grid, Paper, Dialog, IconButton } from '@material-ui/core';
 import ConvexCard from '@src/components/convex-card'
-// import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import ChargeTable from './components/table'
 import './index.styl'
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -33,55 +31,44 @@ interface Categories {
     profit: HTMLElement
 }
 
-const chargeCategoriesHeader =(addFunc:Function)=> <Grid  className='charge-cat-con'>
+interface Form {
+    number: string
+    name: string
+}
+interface Dialog {
+    handleDialogClose: Function | any
+    handleDialogConfirm: Function | any
+    form: Form
+}
+
+const chargeCategoriesHeader = (addFunc: Function) => <Grid className='charge-cat-con'>
     账务类别
     <Grid item xs></Grid>
-    <IconButton className='charge-cat-add' onClick={() =>addFunc()}>
+    <IconButton className='charge-cat-add' onClick={() => addFunc()}>
         <AddCircleOutlineIcon />
     </IconButton>
 </Grid>
 export default function CenteredGrid() {
     const classes = useStyles();
     const [chargeCategories, setChargeCategories] = useState([{ label: 111, number: 111, id: 11 }])
-    const [todayCharges, setTodayCharges] = useState([])
-    const [addModalVisible, setAaddModalVisible] = useState(false)
-
-    const refs: Categories = {
-        category: null,
-        total: null,
-        profit: null,
-    }
-    const refTypes = Object.keys(refs)
-
-    setTimeout(() => {
-        let temkey = ''
-        for (temkey in refs) {
-            refs[temkey] = document.getElementById('field-' + temkey)
+    const [todayCharges, setTodayCharges] = useState([
+        {
+            number: 11,
+            name: '1111',
+            total: 11,
+            profit: 11,
         }
-    }, 0);
-    const transpondEnter = (type: string) => {
-        let e: any = window.event
-        if (e.keyCode && e.keyCode === 13) {
-            switch (type) {
-                case refTypes[0]:
-                    refs[refTypes[1]].focus()
-                    break
-                case refTypes[1]:
-                    refs[refTypes[2]].focus()
-                    break
-                case refTypes[2]:
-                    refs[refTypes[0]].focus()
-                    break
-                default: break
-            }
-        }
+    ])
+    const {
+        dialogEl,
+        dialogClose,
+        dialogOpen,
+    } = DialogContent({ handleSubmit })
 
-        // if(e.keyCode)
+    function handleSubmit(form: Form) {
+        dialogClose()
     }
     const deleteChargeCategory = (id: number) => {
-
-    }
-    const addChargeCategory=()=>{
 
     }
     return (
@@ -106,7 +93,7 @@ export default function CenteredGrid() {
                     </Paper>
                 </Grid>
                 <Grid item xs={6}>
-                    <ConvexCard header={chargeCategoriesHeader(addChargeCategory)} color='primary'>
+                    <ConvexCard header={chargeCategoriesHeader(() => dialogOpen())} color='primary'>
                         {
                             chargeCategories.map(el => <Alert className='margintb10' severity='info' icon={<span>{el.number}</span>} action={<IconButton onClick={() => deleteChargeCategory(el.id)}>
                                 <CloseIcon />
@@ -115,37 +102,88 @@ export default function CenteredGrid() {
                         }
                     </ConvexCard>
                 </Grid>
-                <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">
-        <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            To subscribe to this website, please enter your email address here. We will send updates
-            occasionally.
-          </DialogContentText>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="name"
-            label="Email Address"
-            type="email"
-            fullWidth
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose} color="primary">
-            Cancel
-          </Button>
-          <Button onClick={handleClose} color="primary">
-            Subscribe
-          </Button>
-        </DialogActions>
-      </Dialog>
+                {dialogEl}
                 <Grid item xs={6}>
                     <ConvexCard header='今日记账' color='success'>
-
+                       <ChargeTable rows={todayCharges} />
                     </ConvexCard>
                 </Grid>
             </Grid>
         </div>
     );
+}
+function transpondEnter(type: string) {
+    const refs: Categories = {
+        category: null,
+        total: null,
+        profit: null,
+    }
+    const refTypes = Object.keys(refs)
+    let temkey = ''
+    for (temkey in refs) {
+        refs[temkey] = document.getElementById('field-' + temkey)
+    }
+    let e: any = window.event
+    if (e.keyCode && e.keyCode === 13) {
+        switch (type) {
+            case refTypes[0]:
+                refs[refTypes[1]].focus()
+                break
+            case refTypes[1]:
+                refs[refTypes[2]].focus()
+                break
+            case refTypes[2]:
+                refs[refTypes[0]].focus()
+                break
+            default: break
+        }
+    }
+}
+
+function DialogContent({ handleSubmit }: any) {
+    const [addModalVisible, setAaddModalVisible] = useState(false)
+    const dialogClose = () => setAaddModalVisible(false)
+    const dialogOpen = () => setAaddModalVisible(true)
+
+    const form: Form = {
+        number: '',
+        name: ''
+    }
+    const dialogEl = <Dialog open={addModalVisible} aria-labelledby="form-dialog-title">
+        <div className='padding1rem'>
+            <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                onChange={({ target: { value } }) => form.number = value}
+                label="编号"
+                type="email"
+                fullWidth
+            />
+            <TextField
+                autoFocus
+                margin="dense"
+                id="name"
+                onChange={({ target: { value } }) => form.name = value}
+                label="名称"
+                type="email"
+                fullWidth
+            />
+        </div>
+        <DialogActions>
+            <Button onClick={dialogClose} color="primary">
+                Cancel
+            </Button>
+            <Button onClick={() => handleSubmit(form)} color="primary">
+                Subscribe
+             </Button>
+        </DialogActions>
+    </Dialog>
+    return {
+        dialogEl,
+        dialogClose,
+        dialogOpen,
+    }
 }

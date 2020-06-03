@@ -78,7 +78,7 @@ class App extends React.Component<any, IState> {
                     </IconButton>
                 </Paper>
                 <div id='rightCon' className='right-con' onScroll={this.handleBar.bind(this)}>
-                    <RightHeader title={appBarTitle} className={isHiddenBar && 'is-scorlling'} />
+                    <RightHeader title={appBarTitle} className={!isHiddenBar && 'is-scorlling'} />
                     <div className='route-view paddinglr1rem'>
                         {/* <Grow
                             in={checked}
