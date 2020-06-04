@@ -8,6 +8,7 @@
     "sourceMap": true,
     "baseUrl": ".",
     "jsx": "react",
+    "experimentalDecorators":true,
     "outDir": "dist",
     "moduleResolution": "node",
     "resolveJsonModule": true,

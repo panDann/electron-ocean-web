@@ -25,15 +25,23 @@
  *  });
  * ```
  */
-// import React from 'react' 
-
+import React from 'react'
 import {render} from 'react-dom'
 import Container from './views/container'
-
+import Store from './views/container-store'
+import {Provider } from 'mobx-react';
 import '@src/styles/common.styl';
 
-let app = new Container(null)
+//  (<any>window).$notify = '1111'
+// window.Notify = '1111'
 
-render(app.render(),document.querySelector('#app'))
+
+
+// let app = new Container(null)
+
+// app.render()
+render(<Provider store={Store}>
+    <Container />
+</Provider> ,document.querySelector('#app'))
 // console.log('👋 This message is being logged by "renderer.js", included via webpack..  ');
  
