@@ -65,7 +65,7 @@ export default function StickyHeadTable({rows}:{rows:Data[]}) {
                   {columns.map((column) => {
                     return (
                       <TableCell key={column.prop} align={column.align}>
-                          <span className={column.prop=='profit'&&'success-color'}>{row[column.prop]}</span>
+                          <span className={`${column.prop=='profit'&&'success-color'}`}>{row[column.prop]}</span>
                       </TableCell>
                     );
                   })}

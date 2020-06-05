@@ -9,43 +9,15 @@
 @import './wx-components';
 
 $imgStandardSize = 5rem
-.radio-size {
-    font-size: 10px
-    }
-.bottom-btn {
-    position fixed
-    bottom 3rem
-    left 0 
-    right 0 
-    margin auto
-    }
-.search-input {
-    border solid 1px $grey;
-    border-radius: 2rem
-    // width: 100%
-    padding: .5rem 1rem
-    margin: .3rem 0
-    }
 
-
-.image {
-    height $imgStandardSize
-    width:  $imgStandardSize
-    border-radius: .1rem
-    }
 .hidden {
     visibility hidden
     }
 
-.tab_bar__bottom {
-     margin-bottom 3rem
-    }
 .bottom-line 
     padding-bottom: .5rem
     border-bottom: $bottomLine
-.active:active {
-    opacity .7
-    }
+
 *::-webkit-scrollbar
     height 7px
     width: 7px
@@ -53,3 +25,8 @@ $imgStandardSize = 5rem
 *::-webkit-scrollbar-thumb
     background: $grey
     border-radius: .4rem
+.fixed-progerss 
+    position fixed!important
+    z-index $progerssZIndex
+    top 0
+    width: 100%

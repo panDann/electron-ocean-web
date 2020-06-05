@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { createStyles, makeStyles, Theme, } from '@material-ui/core/styles';
 import { TextField, Card, Button, FormControlLabel, Checkbox } from '@material-ui/core';
 // import FormControlLabel from '@material-ui/core/FormControlLabel';
-// import Checkbox, { CheckboxProps } from '@material-ui/core/Checkbox';
+import { tokenStorage,userInfoStorage } from '@src/views/consts/localStorage-variables';
+import {homePath} from '@src/views/routes/path.ts'
 import { login } from '@src/api/login'
+import Store from '@src/views/container-store';
+
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
         root: {
@@ -31,12 +34,15 @@ export default function BasicTextFields() {
     })
     const handelLogin = async () => {
         let res = await login(state.form)
-
-        console.log(res);
-        
+        if(res){
+            localStorage.setItem(tokenStorage,res.token)
+            localStorage.setItem(userInfoStorage,JSON.stringify({username:res.username,role:res.role}))
+            Store.hasLogined = true
+            location.hash = '#'+ homePath
+        }
     }
     return (
-        <Card className={`absolute-center flex-column ${classes.card}`}>
+        <Card onKeyDownCapture={({keyCode}:React.KeyboardEvent)=>keyCode==13&&handelLogin()} className={`absolute-center flex-column ${classes.card}`}>
             <form className={` flex-column ${classes.root}`} autoComplete="on">
                 <TextField id="username" autoFocus onChange={({target:{value}})=>state.form.username=value} required label="用户名" variant="outlined" />
                 <TextField id="password" type='password' onChange={({target:{value}})=>state.form.password=value} required label="密码" variant="outlined" />

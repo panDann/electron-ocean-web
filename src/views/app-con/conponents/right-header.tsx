@@ -15,7 +15,11 @@ import AccountCircle from '@material-ui/icons/AccountCircle';
 import MailIcon from '@material-ui/icons/Mail';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import MoreIcon from '@material-ui/icons/MoreVert';
-import { $lightGrey,$grey } from "@src/styles/variables.json";
+import { $lightGrey } from "@src/styles/variables.json";
+import { userInfoStorage } from '@src/views/consts/localStorage-variables';
+
+import { logout } from '@src/api/login'
+
 
 import './right-header.styl'
 const useStyles = makeStyles((theme: Theme) =>
@@ -107,7 +111,8 @@ export default function PrimarySearchAppBar({className='',title=''}) {
     setMobileMoreAnchorEl(null);
   };
 
-  const handleMenuClose = () => {
+  const handleMenuClose = (type:string) => {
+    if(type == 'logout') logout()
     setAnchorEl(null);
     handleMobileMenuClose();
   };
@@ -127,8 +132,8 @@ export default function PrimarySearchAppBar({className='',title=''}) {
       open={isMenuOpen}
       onClose={handleMenuClose}
     >
-      <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-      <MenuItem onClick={handleMenuClose}>My account</MenuItem>
+      <MenuItem onClick={()=>handleMenuClose('logout')}>退出</MenuItem>
+      <MenuItem onClick={()=>handleMenuClose('modify')}>My account</MenuItem>
     </Menu>
   );
 
@@ -168,7 +173,7 @@ export default function PrimarySearchAppBar({className='',title=''}) {
         >
           <AccountCircle />
         </IconButton>
-        <p>Profile</p>
+        <p>{JSON.parse(localStorage.getItem(userInfoStorage)||'{}').username||'用户'}</p>
       </MenuItem>
     </Menu>
   );

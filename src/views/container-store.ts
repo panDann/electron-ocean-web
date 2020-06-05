@@ -1,35 +1,32 @@
 import { observable, action } from 'mobx';
 import  {  Color } from '@material-ui/lab/Alert';
+import { tokenStorage } from '@src/views/consts/localStorage-variables';
 
-let notifyTimer:any = 0 
+// let notifyTimer:any = 0 
 
-class ConStore {
+export class ConStore {
     @observable isLoading = false
     @observable isNotify = false
-    @observable hasLogined = false
+    @observable hasLogined = !!localStorage.getItem(tokenStorage)
     @observable notifyMsg = ''
-    @observable notifyType = 'error'
-
-
+    @observable notifyType:Color = 'error'
+    @observable notifyShow = false
     @action showLoading = ()=>{
         this.isLoading = true
     }
     @action hiddenLoading = ()=>{
         this.isLoading = false
     }
-    @action showNotify = (msg:string,type?:Color)=>{
-        
-        this.notifyMsg = msg +' '.repeat(Math.random()*4|0)
-        // if(notifyTimer)clearTimeout(notifyTimer)
-        // notifyTimer = setTimeout(() => {
-        //      this.notifyMsg = ''
-        // }, 6000);
-        this.notifyType = type || this.notifyType
+    @action showNotify = (msg:string,type?:Color )=>{
+        this.notifyMsg = msg
+        this.notifyShow = true
+        this.notifyType = type || 'error'
+        // return {msg,type}
     }
-    // @action hiddenNotify = ()=>{
-
-    //     this.isNotify = false
-    // }
+   
+    @action notifyClose = ()=>{
+        this.notifyShow = false
+    }
    
 }
 
