@@ -1,8 +1,5 @@
 import React, { useState } from 'react';
 import { makeStyles, createStyles, Theme, } from '@material-ui/core/styles';
-// import Paper from '@material-ui/core/Paper';
-// import Grid from '@material-ui/core/Grid';
-// import Collapse from '@material-ui/core/Collapse';
 import Alert from '@material-ui/lab/Alert';
 import CloseIcon from '@material-ui/icons/Close';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -10,7 +7,15 @@ import { TextField, Button, Grid, Paper, Dialog, IconButton } from '@material-ui
 import ConvexCard from '@src/components/convex-card'
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
+
+import { getCategory, addCategory, deleteCategory } from '@src/api/charge'
 import ChargeTable from './components/table'
+import {
+    Categories,
+    fieldTypes,
+    fieldLabels,
+    Form,
+} from './types'
 import './index.styl'
 const useStyles = makeStyles((theme: Theme) =>
     createStyles({
@@ -25,21 +30,6 @@ const useStyles = makeStyles((theme: Theme) =>
     }),
 );
 
-interface Categories {
-    [category: string]: HTMLElement
-    total: HTMLElement
-    profit: HTMLElement
-}
-
-interface Form {
-    number: string
-    name: string
-}
-interface Dialog {
-    handleDialogClose: Function | any
-    handleDialogConfirm: Function | any
-    form: Form
-}
 
 const chargeCategoriesHeader = (addFunc: Function) => <Grid className='charge-cat-con'>
     账务类别
@@ -65,8 +55,11 @@ export default function CenteredGrid() {
         dialogOpen,
     } = DialogContent({ handleSubmit })
 
-    function handleSubmit(form: Form) {
-        dialogClose()
+    async function  handleSubmit(form: Form) {
+        let res = await addCategory(form)
+        if(res){
+          dialogClose()
+        }
     }
     const deleteChargeCategory = (id: number) => {
 
@@ -77,22 +70,16 @@ export default function CenteredGrid() {
                 <Grid item xs={12}>
                     <Paper className={classes.paper}>
                         <Grid container justify='space-around' alignItems='center'>
-                            <Grid item xs={3} >
-                                <TextField onKeyUp={() => transpondEnter('category')} id="field-category" label="Outlined" variant="outlined" />
-                            </Grid>
-                            <Grid item xs={3} >
-                                <TextField onKeyUp={() => transpondEnter('total')} id="field-total" label="Outlined" variant="outlined" />
-                            </Grid>
-                            <Grid item xs={3} >
-                                <TextField onKeyUp={() => transpondEnter('profit')} id="field-profit" label="Outlined" variant="outlined" />
-                            </Grid>
+                           {fieldTypes.map((el,index)=> <Grid item xs={3} key={el} >
+                                <TextField onKeyUp={() => transpondEnter(el)} id={'field-'+el} label={fieldLabels[index]} variant="outlined" />
+                            </Grid>)}
                             <Grid item xs={2} >
                                 <Button color='primary' variant="outlined" >添加</Button>
                             </Grid>
                         </Grid>
                     </Paper>
                 </Grid>
-                <Grid item xs={6}>
+                <Grid item xs={6} key='category-con'>
                     <ConvexCard header={chargeCategoriesHeader(() => dialogOpen())} color='primary'>
                         {
                             chargeCategories.map(el => <Alert className='margintb10' severity='info' icon={<span>{el.number}</span>} action={<IconButton onClick={() => deleteChargeCategory(el.id)}>
@@ -103,9 +90,9 @@ export default function CenteredGrid() {
                     </ConvexCard>
                 </Grid>
                 {dialogEl}
-                <Grid item xs={6}>
+                <Grid item xs={6} key='today-con'>
                     <ConvexCard header='今日记账' color='success'>
-                       <ChargeTable rows={todayCharges} />
+                        <ChargeTable rows={todayCharges} />
                     </ConvexCard>
                 </Grid>
             </Grid>
@@ -174,10 +161,10 @@ function DialogContent({ handleSubmit }: any) {
         </div>
         <DialogActions>
             <Button onClick={dialogClose} color="primary">
-                Cancel
+                取消
             </Button>
             <Button onClick={() => handleSubmit(form)} color="primary">
-                Subscribe
+                提交
              </Button>
         </DialogActions>
     </Dialog>

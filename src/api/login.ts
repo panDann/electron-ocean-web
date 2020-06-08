@@ -1,28 +1,41 @@
 import Request from '@src/utils/fetch'
 import { tokenStorage,userInfoStorage } from '@src/views/consts/localStorage-variables';
 import Store from '@src/views/container-store';
+import {Validator,IRule} from '@src/utils/tool'
 
-interface User {
+export interface User {
     role: string
     token: string
     username: string
 }
 
-export const login = ({ username = '', password = '' }) => {
+const loginRules:IRule = [
+    {
+        username:[
+            {require:true,message:'请输入用户名'}
+        ],
+        password:[
+            {require:true,message:'请输入密码'}
+        ],
+    }
+]
+export const login = (data:Record<string,any>) => {
 
-    let param = new FormData()
-    param.append('username', username)
-    param.append('password', password)
+    if(!Validator(data,loginRules))return
 
-    return Request<User>(`user/login`, param)
+    return Request<User>(`user/login`, {data})
+}
+
+export const clearUserStorage = () => {
+    localStorage.setItem(tokenStorage,'')
+    localStorage.setItem(userInfoStorage,'')
+    Store.hasLogined = false
 }
 
 export const logout = async () => {
-     let res = await Request(`user/logout`)
+     let res = await Request<string>(`user/logout`,{data:{}})
      if(res) {
-         localStorage.setItem(tokenStorage,'')
-         localStorage.setItem(userInfoStorage,'')
-         Store.showNotify('退出成功','success')
-         Store.hasLogined = false
+         Store.showNotify(res as string,'success')
+         clearUserStorage()
      }
 }
