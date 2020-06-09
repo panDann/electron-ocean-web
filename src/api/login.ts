@@ -1,6 +1,6 @@
 import Request from '@src/utils/fetch'
 import { tokenStorage,userInfoStorage } from '@src/views/consts/localStorage-variables';
-import Store from '@src/views/container-store';
+import {$notify,$setHasLogined} from '@src/views/container-store';
 import {Validator,IRule} from '@src/utils/tool'
 
 export interface User {
@@ -29,13 +29,13 @@ export const login = (data:Record<string,any>) => {
 export const clearUserStorage = () => {
     localStorage.setItem(tokenStorage,'')
     localStorage.setItem(userInfoStorage,'')
-    Store.hasLogined = false
+    $setHasLogined(false)
 }
 
 export const logout = async () => {
      let res = await Request<string>(`user/logout`,{data:{}})
      if(res) {
-         Store.showNotify(res as string,'success')
+        $notify(res as string,'success')
          clearUserStorage()
      }
 }

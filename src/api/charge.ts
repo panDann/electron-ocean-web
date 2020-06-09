@@ -1,5 +1,5 @@
 import Request from '@src/utils/fetch'
-import Store from '@src/views/container-store';
+import {$notify} from '@src/views/container-store';
 import { Validator, IRule } from '@src/utils/tool'
 
 export interface Category {
@@ -25,7 +25,7 @@ export const addCategory = async (data: Record<string, any>) => {
     if (!Validator(data, chargeCategoriesRules)) return
 
     let res = await Request<string>(`charge/category`, {data})
-    Store.showNotify(res+'','success')
+    $notify(res+'','success')
     return true
 }
 

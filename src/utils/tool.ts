@@ -1,4 +1,4 @@
-import Store from '@src/views/container-store';
+import {$notify} from '@src/views/container-store';
 
 
 export function obj2formdata(obj: Record<string, any>): FormData {
@@ -22,26 +22,30 @@ export type IRule = Record<string, Rule[]>[]
 export function Validator(obj: Record<string, any> = {}, rules:IRule):boolean {
 
     let rulesLen = rules.length,
-        res = false
-
-    if (!Object.keys(obj).length || !rulesLen) return false
+        res = false,
+        objKeys = Object.keys(obj)
+    if (!objKeys.length || !rulesLen) return false
 
     for (let i = 0; i < rulesLen; i++) {
-        for (const objKey in rules[i]) {
-            if (typeof obj[objKey] === 'undefined') continue
-            let keyRules = rules[i][objKey]
+            let currentIRule = rules[i]
+        for (const objKey in currentIRule) {
 
+            if (typeof obj[objKey] === 'undefined') continue
+            let keyRules = currentIRule[objKey]
             for (let rule of keyRules) {
+                console.log(333,obj[objKey]);
+
                 if (rule.require && !obj[objKey]) {
-                    Store.showNotify(rule.message || '输入有误')
+                    $notify(rule.message || '输入有误')
                     return res
                 }
                 if (rule.validator) {
+                    
                     if (typeof rule.validator === 'function') {
                         if (!rule.validator(obj[objKey])) return res
                     } else {
                         if (rule.validator.test && !rule.validator.test(obj[objKey])) {
-                            Store.showNotify(rule.message || '输入有误')
+                            $notify(rule.message || '输入有误')
                             return res
                         }
                     }

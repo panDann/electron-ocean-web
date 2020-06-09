@@ -131,11 +131,11 @@ function DialogContent({ handleSubmit }: any) {
     const [addModalVisible, setAaddModalVisible] = useState(false)
     const dialogClose = () => setAaddModalVisible(false)
     const dialogOpen = () => setAaddModalVisible(true)
-
-    const form: Form = {
+    const [form, setForm] = useState({
         number: '',
         name: ''
-    }
+    })
+
     const dialogEl = <Dialog open={addModalVisible} aria-labelledby="form-dialog-title">
         <div className='padding1rem'>
             <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
@@ -143,19 +143,19 @@ function DialogContent({ handleSubmit }: any) {
             <TextField
                 autoFocus
                 margin="dense"
-                id="name"
-                onChange={({ target: { value } }) => form.number = value}
+                value={form.number}
+                id="number"
+                onChange={({ target: { value } }) => setForm({...form,number:value})}
                 label="编号"
-                type="email"
                 fullWidth
             />
             <TextField
                 autoFocus
                 margin="dense"
+                value={form.name}
                 id="name"
-                onChange={({ target: { value } }) => form.name = value}
+                onChange={({ target: { value } }) => setForm({...form,name:value})}
                 label="名称"
-                type="email"
                 fullWidth
             />
         </div>

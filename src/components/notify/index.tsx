@@ -17,16 +17,16 @@ export default function Notify() {
             },
         },
     }));
-    const classes = useStyles();
+    const classes = useStyles()
     const handleClose = (event?: React.SyntheticEvent, reason?: string) => {
         if (reason === 'clickaway') {
-            return;
+            return
         }
         ConStore.notifyShow = false
-    };
+    }
 
     return <div className={classes.root} >
-    <Snackbar open={ConStore.notifyShow} autoHideDuration={6000} onClose={handleClose}>
+    <Snackbar open={ConStore.notifyShow} autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={ConStore.notifyType}>
             {ConStore.notifyMsg}
         </Alert>

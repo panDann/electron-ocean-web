@@ -33,3 +33,14 @@ export class ConStore {
 const Store  = new ConStore()
 
 export default Store
+
+export const $notify = (msg:string,type?:Color)=>{
+    Store.showNotify(msg,type)
+}
+export const $loading = (val:boolean)=>{
+    Store.isLoading = val
+}
+
+export const $setHasLogined = (val:boolean)=>{
+    Store.hasLogined = val
+}

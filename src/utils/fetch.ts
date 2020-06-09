@@ -1,7 +1,7 @@
 
 
 // import Axios, { AxiosRequestConfig, AxiosResponse } from 'axios';
-import Store from '@src/views/container-store';
+import {$loading,$notify} from '@src/views/container-store';
 import {obj2formdata} from './tool'
 import {clearUserStorage} from '@src/api/login'
 import { tokenStorage } from '@src/views/consts/localStorage-variables';
@@ -36,7 +36,7 @@ let responeCode = {
     notLogin: 10041,
 }
 export default function request<T>(url: string, option?:IConfig) {
-
+    $loading(true)
     const configs:RequestInit = {
         method: 'POST',
         body: obj2formdata(option.data||{}),
@@ -58,14 +58,14 @@ export default function request<T>(url: string, option?:IConfig) {
             return data.json()
         })
         .then((data: ICommonRes<T>)=> {
-            Store.hiddenLoading()
+            $loading(false)
             return ckeckRes<T>(data)
         })
         .catch(err => {
             console.log(err);
 
-            Store.hiddenLoading()
-            Store.showNotify('网络请求出错')
+            $loading(false)
+            $notify('网络请求出错')
         })
 }
 
@@ -76,17 +76,18 @@ function ckeckRes<T>(data: ICommonRes<T>): boolean | T {
         case responeCode.success:
             return data.data
         case responeCode.loginOverdue:
-            Store.showNotify('登录过期')
+            $notify('登录过期')
             clearUserStorage()
             return errRes
         case responeCode.error:
-            Store.showNotify(data.message)
+            $notify(data.message)
             return errRes
         case responeCode.noPermisson:
-            Store.showNotify('无权限访问')
+            $notify('无权限访问')
             return errRes
         case responeCode.notLogin:
-            Store.showNotify('未登录')
+            $notify('未登录')
+            clearUserStorage()
             return errRes
         default: return errRes
     }
