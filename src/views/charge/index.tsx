@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { makeStyles, createStyles, Theme, } from '@material-ui/core/styles';
+import React from 'react';
+// import { makeStyles, createStyles, Theme, } from '@material-ui/core/styles';
 import Alert from '@material-ui/lab/Alert';
 import CloseIcon from '@material-ui/icons/Close';
 import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
@@ -7,101 +7,168 @@ import { TextField, Button, Grid, Paper, Dialog, IconButton } from '@material-ui
 import ConvexCard from '@src/components/convex-card'
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import {$notify} from '@src/views/container-store';
 
-import { getCategory, addCategory, deleteCategory } from '@src/api/charge'
+import { getCategory, addCategory, deleteCategory, Category,
+    addChargeToday,
+    getChargeToday,
+    deleteChargeToday,
+    ChargeToday
+} from '@src/api/charge'
 import ChargeTable from './components/table'
 import {
     Categories,
     fieldTypes,
     fieldLabels,
     Form,
+    ChargeForm
 } from './types'
 import './index.styl'
-const useStyles = makeStyles((theme: Theme) =>
-    createStyles({
-        root: {
-            flexGrow: 1,
-        },
-        paper: {
-            padding: theme.spacing(2),
-            textAlign: 'center',
-            color: theme.palette.text.secondary,
-        },
-    }),
-);
 
+const currentCategoryPage = 1
 
-const chargeCategoriesHeader = (addFunc: Function) => <Grid className='charge-cat-con'>
-    账务类别
-    <Grid item xs></Grid>
-    <IconButton className='charge-cat-add' onClick={() => addFunc()}>
-        <AddCircleOutlineIcon />
-    </IconButton>
-</Grid>
-export default function CenteredGrid() {
-    const classes = useStyles();
-    const [chargeCategories, setChargeCategories] = useState([{ label: 111, number: 111, id: 11 }])
-    const [todayCharges, setTodayCharges] = useState([
-        {
-            number: 11,
-            name: '1111',
-            total: 11,
-            profit: 11,
-        }
-    ])
-    const {
-        dialogEl,
-        dialogClose,
-        dialogOpen,
-    } = DialogContent({ handleSubmit })
-
-    async function  handleSubmit(form: Form) {
-        let res = await addCategory(form)
-        if(res){
-          dialogClose()
-        }
-    }
-    const deleteChargeCategory = (id: number) => {
-
-    }
-    return (
-        <div className={classes.root}>
-            <Grid container spacing={2}>
-                <Grid item xs={12}>
-                    <Paper className={classes.paper}>
-                        <Grid container justify='space-around' alignItems='center'>
-                           {fieldTypes.map((el,index)=> <Grid item xs={3} key={el} >
-                                <TextField onKeyUp={() => transpondEnter(el)} id={'field-'+el} label={fieldLabels[index]} variant="outlined" />
-                            </Grid>)}
-                            <Grid item xs={2} >
-                                <Button color='primary' variant="outlined" >添加</Button>
-                            </Grid>
-                        </Grid>
-                    </Paper>
-                </Grid>
-                <Grid item xs={6} key='category-con'>
-                    <ConvexCard header={chargeCategoriesHeader(() => dialogOpen())} color='primary'>
-                        {
-                            chargeCategories.map(el => <Alert className='margintb10' severity='info' icon={<span>{el.number}</span>} action={<IconButton onClick={() => deleteChargeCategory(el.id)}>
-                                <CloseIcon />
-                            </IconButton>}>
-                                {el.label}</Alert>)
-                        }
-                    </ConvexCard>
-                </Grid>
-                {dialogEl}
-                <Grid item xs={6} key='today-con'>
-                    <ConvexCard header='今日记账' color='success'>
-                        <ChargeTable rows={todayCharges} />
-                    </ConvexCard>
-                </Grid>
-            </Grid>
-        </div>
-    );
+interface State {
+    chargeCategories: Category[]
+    todayCharges: ChargeToday[]
+    form: Form
+    chargeForm: ChargeForm
+    dialogVisible: boolean
 }
-function transpondEnter(type: string) {
+export default class CenteredGrid extends React.Component<any, State> {
+    constructor(prop: any) {
+        super(prop)
+        this.state = {
+            chargeCategories: [],
+            todayCharges: [],
+            form: {
+                name: '',
+                number: ''
+            },
+            chargeForm: {
+                total: '',
+                profit: '',
+                number: '',
+                name: ''
+            },
+            // ...DialogContent(this.handleSubmit)
+            dialogVisible: false
+        }
+       this.handleChargeFormSubmit.bind(this)
+    }
+    componentWillMount() {
+        this.getCategoryData()
+        this.getChargeTodayData()
+    }
+    async   getCategoryData(page = 1, limit = 30) {
+        let res: any = await getCategory(page, limit)
+        this.setState({ chargeCategories: res || [] })
+        return !!res
+    }
+
+    async  handleSubmit() {
+        const { form } = this.state
+        await addCategory(form) && this.getCategoryData() && this.setState({ dialogVisible: false })
+
+    }
+    async deleteChargeCategory(id: number) {
+        await deleteCategory(id) && this.getCategoryData()
+    }
+    // charge today
+    async   getChargeTodayData(page = 1, limit = 30) {
+        let res: any = await  getChargeToday(page, limit)
+        this.setState({ todayCharges: res || [] })
+        return !!res
+    }
+
+    async  handleChargeFormSubmit() {
+        const { chargeForm } = this.state
+        await addChargeToday(chargeForm) && this.getChargeTodayData() && this.setState({chargeForm:{name:'',number:'',total:'',profit:''}})
+    }
+    async deleteChargeTodayItem(id: number) {
+        await deleteChargeToday(id) && this.getChargeTodayData()
+    }
+
+    render() {
+        const { chargeCategories, chargeForm, todayCharges, dialogVisible, form } = this.state
+        return (
+            <div className='root'>
+                <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                        <Paper className='paper'>
+                            <Grid container justify='space-around' alignItems='center'>
+                                {fieldTypes.map((el, index) => <Grid item xs={3} key={el} >
+                                    <TextField value={chargeForm[el]}
+                                        onChange={({ target: { value } }) => this.setState({ chargeForm: { ...chargeForm, [el]: value } })}
+                                        onKeyUp={() => transpondEnter(this, el)}
+                                        id={'field-' + el} label={fieldLabels[index]} variant="outlined" />
+                                </Grid>)}
+                                <Grid item xs={2} >
+                                    <Button color='primary' variant="outlined" onClick={this.handleChargeFormSubmit.bind(this)} >添加</Button>
+                                </Grid>
+                            </Grid>
+                        </Paper>
+                    </Grid>
+                    <Grid item xs={6} key='category-con'>
+                        <ConvexCard header={
+                            <Grid className='charge-cat-con'>
+                                账务类别
+                            <IconButton className='charge-cat-add' onClick={() => this.setState({ dialogVisible: true })}>
+                                    <AddCircleOutlineIcon />
+                                </IconButton>
+                            </Grid>
+                        } color='primary'>
+                            {
+                                chargeCategories.map(el => <Alert key={el.id} className='margintb10' severity='info' icon={<span>{el.number}</span>} action={<IconButton onClick={() => this.deleteChargeCategory(el.id)}>
+                                    <CloseIcon />
+                                </IconButton>}>
+                                    {el.name}</Alert>)
+                            }
+                        </ConvexCard>
+                    </Grid>
+                    <Dialog open={dialogVisible} aria-labelledby="form-dialog-title">
+                        <div className='padding1rem'>
+                            <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
+
+                            <TextField
+                                autoFocus
+                                margin="dense"
+                                value={form.number}
+                                id="number"
+                                onChange={({ target: { value } }) => this.setState({ form: { ...form, number: value } })}
+                                label="编号"
+                                fullWidth
+                            />
+                            <TextField
+                                margin="dense"
+                                value={form.name}
+                                id="name"
+                                onChange={({ target: { value } }) => this.setState({ form: { ...form, name: value } })}
+                                label="名称"
+                                fullWidth
+                            />
+                        </div>
+                        <DialogActions>
+                            <Button onClick={() => this.setState({ dialogVisible: false })} color="primary">
+                                取消
+                            </Button>
+                            <Button onClick={this.handleSubmit.bind(this)} color="primary">
+                                提交
+                          </Button>
+                        </DialogActions>
+                    </Dialog>
+                    <Grid item xs={6} key='today-con'>
+                        <ConvexCard header='今日记账' color='success'>
+                            <ChargeTable rows={todayCharges}  deleteItem={this.deleteChargeTodayItem.bind(this)}/>
+                        </ConvexCard>
+                    </Grid>
+                </Grid>
+            </div>
+        )
+    }
+}
+function transpondEnter(_this: any, type: string) {
     const refs: Categories = {
-        category: null,
+        number: null,
         total: null,
         profit: null,
     }
@@ -114,12 +181,21 @@ function transpondEnter(type: string) {
     if (e.keyCode && e.keyCode === 13) {
         switch (type) {
             case refTypes[0]:
+                    const { chargeForm,chargeCategories } = _this.state
+                    let matchNumber = chargeCategories.find((el:ChargeToday)=>el.number == chargeForm.number)
+                    if(matchNumber){
+                        chargeForm.name = matchNumber.name
+                    }else {
+                        $notify('无此编号账务')
+                        return
+                    }
                 refs[refTypes[1]].focus()
                 break
             case refTypes[1]:
                 refs[refTypes[2]].focus()
                 break
             case refTypes[2]:
+                _this.handleChargeFormSubmit()
                 refs[refTypes[0]].focus()
                 break
             default: break
@@ -127,50 +203,25 @@ function transpondEnter(type: string) {
     }
 }
 
-function DialogContent({ handleSubmit }: any) {
-    const [addModalVisible, setAaddModalVisible] = useState(false)
-    const dialogClose = () => setAaddModalVisible(false)
-    const dialogOpen = () => setAaddModalVisible(true)
-    const [form, setForm] = useState({
-        number: '',
-        name: ''
-    })
+// function DialogContent(dialogSubmit: any) {
+//     const [addModalVisible, setAaddModalVisible] = useState(false)
+//     const dialogClose = () => setAaddModalVisible(false)
+//     const dialogOpen = () => setAaddModalVisible(true)
+//     const [form, setForm] = useState({
+//         number: '',
+//         name: ''
+//     })
+//     // const dialogSubmit = () => form
+//     const dialogEl = 
+//     return {
+//         dialogEl,
+//         dialogClose,
+//         dialogOpen,
+//         // dialogSubmit,
+//     }
+// }
 
-    const dialogEl = <Dialog open={addModalVisible} aria-labelledby="form-dialog-title">
-        <div className='padding1rem'>
-            <DialogTitle id="form-dialog-title">Subscribe</DialogTitle>
-
-            <TextField
-                autoFocus
-                margin="dense"
-                value={form.number}
-                id="number"
-                onChange={({ target: { value } }) => setForm({...form,number:value})}
-                label="编号"
-                fullWidth
-            />
-            <TextField
-                autoFocus
-                margin="dense"
-                value={form.name}
-                id="name"
-                onChange={({ target: { value } }) => setForm({...form,name:value})}
-                label="名称"
-                fullWidth
-            />
-        </div>
-        <DialogActions>
-            <Button onClick={dialogClose} color="primary">
-                取消
-            </Button>
-            <Button onClick={() => handleSubmit(form)} color="primary">
-                提交
-             </Button>
-        </DialogActions>
-    </Dialog>
-    return {
-        dialogEl,
-        dialogClose,
-        dialogOpen,
-    }
-}
+// async function _getCategory(page: number, limit: number){
+//     let res = await getCategory(page,limit)
+//     return res
+// }

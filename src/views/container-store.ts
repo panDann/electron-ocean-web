@@ -21,7 +21,6 @@ export class ConStore {
         this.notifyMsg = msg
         this.notifyShow = true
         this.notifyType = type || 'error'
-        // return {msg,type}
     }
    
     @action notifyClose = ()=>{

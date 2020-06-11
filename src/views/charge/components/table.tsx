@@ -1,18 +1,20 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
+import {Table,Button,Paper} from '@material-ui/core';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-
+import { 
+    ChargeToday
+} from '@src/api/charge'
+// import { Button } from '@material-ui/core';
 interface Column {
-  prop: 'number' | 'name' | 'total' | 'profit'
+  prop: 'number' | 'name' | 'total' | 'profit'|'delete'
   label: string;
   minWidth?: number;
-  align?: 'right';
+  align?: 'center';
 }
 
 const columns: Column[] = [
@@ -20,14 +22,9 @@ const columns: Column[] = [
   { prop: 'name', label: '账务类别', minWidth: 100 },
   { prop: 'total', label: '营收', minWidth: 50 },
   { prop: 'profit', label: '利润', minWidth: 50 },
+  { prop: 'delete', label: '操作', minWidth: 80 },
 ];
 
-export interface Data {
-  number: number;
-  name: string;
-  total: number;
-  profit: number;
-}
 
 const useStyles = makeStyles({
   root: {
@@ -38,7 +35,7 @@ const useStyles = makeStyles({
   },
 });
 
-export default function StickyHeadTable({rows}:{rows:Data[]}) {
+export default function StickyHeadTable({rows,deleteItem}:{rows:ChargeToday[],deleteItem:Function}) {
   const classes = useStyles();
 
   return (
@@ -50,7 +47,7 @@ export default function StickyHeadTable({rows}:{rows:Data[]}) {
               {columns.map((column) => (
                 <TableCell
                   key={column.prop}
-                  align={column.align}
+                  align='center'
                   style={{ minWidth: column.minWidth }}
                 >
                   {column.label}
@@ -61,14 +58,19 @@ export default function StickyHeadTable({rows}:{rows:Data[]}) {
           <TableBody>
             {rows.map((row) => {
               return (
-                <TableRow hover role="checkbox" tabIndex={-1} key={row.name}>
-                  {columns.map((column) => {
+                <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
+                  {columns.map((column,index) => {
                     return (
-                      <TableCell key={column.prop} align={column.align}>
-                          <span className={`${column.prop=='profit'&&'success-color'}`}>{row[column.prop]}</span>
+                      <TableCell key={index}  align='center'>
+                         {
+                             column.prop == 'delete'? <Button color='secondary' onClick={()=>deleteItem(row.id)}>删除</Button>: <span className={`${column.prop=='profit'&&'success-color'}`}>{row[column.prop]}</span>
+                         }
                       </TableCell>
                     );
                   })}
+                  {/* <TableCell key={row.id}  align={column.align}>
+                          <span className={`${column.prop=='profit'&&'success-color'}`}>{row[column.prop]}</span>
+                  </TableCell> */}
                 </TableRow>
               );
             })}
