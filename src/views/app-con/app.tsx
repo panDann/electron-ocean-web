@@ -6,20 +6,23 @@ import Typography from '@material-ui/core/Typography';
 import { withRouter,Redirect } from 'react-router-dom'
 import {
     iconProps,
-    items
+    items,
+    path2index
 } from './consts'
+// import {homePath} from '@src/views/routes/path'
+
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import IconButton from '@material-ui/core/IconButton';
 import LastPageIcon from '@material-ui/icons/LastPage';
 import FirstPageRoundedIcon from '@material-ui/icons/FirstPageRounded';
 import RightHeader from '@src/views/app-con/conponents/right-header'
 import { isFoldMenuStorage } from '@src/views/consts/localStorage-variables'
-import Grow from '@material-ui/core/Grow';
+// import Grow from '@material-ui/core/Grow';
 import { $menuFoldWidth, $menuWidth } from "@src/styles/variables.json";
 import './app.styl'
 
 interface IState {
-    activeItemIndex: number
+    activeItemIndex: number | string
     isFoldMenu: boolean
     isHiddenBar: boolean
     appBarTitle: string
@@ -31,8 +34,11 @@ let
 class App extends React.Component<any, IState> {
     constructor(porp: any) {
         super(porp)
+        const { history:{location:{pathname}} } = porp
+        // console.log(history,pathname);
+        // history.forward()
         this.state = {
-            activeItemIndex: 0,
+            activeItemIndex: path2index.get(pathname)||'',
             isFoldMenu: !!localStorage.getItem(isFoldMenuStorage) || false,
             isHiddenBar: false,
             appBarTitle:'记账'
@@ -57,13 +63,13 @@ class App extends React.Component<any, IState> {
         const { activeItemIndex, isFoldMenu,appBarTitle, isHiddenBar } = this.state
         return (
             <div className='flex-row'>
-                    <Redirect  to={items[0].path}> </Redirect>
+                {/* {<Redirect  to={items[0].path}> </Redirect>} */}
                 <Paper className='side_con border-box' style={{ width: isFoldMenu ? $menuFoldWidth : $menuWidth }}>
                     <MenuList autoFocusItem variant='selectedMenu'>
                         {items.map((el, index: number) =>
                             <MenuItem
                                 key={el.path} onClick={() => this.leapTo(el, index)}
-                                classes={{ root:activeItemIndex == index &&  'active-item' }}
+                                classes={{ root:activeItemIndex === index &&  'active-item' }}
                             >
                                 <ListItemIcon>
                                     {

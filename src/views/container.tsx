@@ -25,7 +25,7 @@ export default class Container extends React.Component {
                         <Route path={loginPath} exact component={Login} />
                       
                         {hasLogined ?  <React.Fragment>
-                        <Redirect to={homePath} />
+                        {/* <Redirect to={homePath} /> */}
                         <Route path={homePath} render={() =>
                             <App>
                                 {

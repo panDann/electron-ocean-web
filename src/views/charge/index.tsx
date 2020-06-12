@@ -81,8 +81,11 @@ export default class CenteredGrid extends React.Component<any, State> {
     }
 
     async  handleChargeFormSubmit() {
-        const { chargeForm } = this.state
-        await addChargeToday(chargeForm) && this.getChargeTodayData() && this.setState({chargeForm:{name:'',number:'',total:'',profit:''}})
+        const { chargeForm,chargeCategories } = this.state
+        if(!matchCategoryName(chargeForm,chargeCategories))return
+
+        await addChargeToday(chargeForm) && this.getChargeTodayData() 
+        && this.setState({chargeForm:{name:'',number:'',total:'',profit:''}})
     }
     async deleteChargeTodayItem(id: number) {
         await deleteChargeToday(id) && this.getChargeTodayData()
@@ -182,13 +185,7 @@ function transpondEnter(_this: any, type: string) {
         switch (type) {
             case refTypes[0]:
                     const { chargeForm,chargeCategories } = _this.state
-                    let matchNumber = chargeCategories.find((el:ChargeToday)=>el.number == chargeForm.number)
-                    if(matchNumber){
-                        chargeForm.name = matchNumber.name
-                    }else {
-                        $notify('无此编号账务')
-                        return
-                    }
+                    if(!matchCategoryName(chargeForm,chargeCategories))return
                 refs[refTypes[1]].focus()
                 break
             case refTypes[1]:
@@ -202,26 +199,14 @@ function transpondEnter(_this: any, type: string) {
         }
     }
 }
+function matchCategoryName(chargeForm:ChargeForm,chargeCategories:Category[]) {
+    let matchNumber = chargeCategories.find((el:Category)=>el.number == chargeForm.number)
+    if(matchNumber){
+        chargeForm.name = matchNumber.name
+    }else {
+        $notify('无此编号账务')
+        return false
+    }
+    return true
+}
 
-// function DialogContent(dialogSubmit: any) {
-//     const [addModalVisible, setAaddModalVisible] = useState(false)
-//     const dialogClose = () => setAaddModalVisible(false)
-//     const dialogOpen = () => setAaddModalVisible(true)
-//     const [form, setForm] = useState({
-//         number: '',
-//         name: ''
-//     })
-//     // const dialogSubmit = () => form
-//     const dialogEl = 
-//     return {
-//         dialogEl,
-//         dialogClose,
-//         dialogOpen,
-//         // dialogSubmit,
-//     }
-// }
-
-// async function _getCategory(page: number, limit: number){
-//     let res = await getCategory(page,limit)
-//     return res
-// }

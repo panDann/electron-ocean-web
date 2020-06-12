@@ -25,3 +25,7 @@ export const items = [
         path: chargeStatisticalPath
     },
 ]
+export const path2index = new Map([
+    [chargePath,0],
+    [chargeStatisticalPath,1],
+])
