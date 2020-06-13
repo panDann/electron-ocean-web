@@ -55,3 +55,11 @@ function authRule(value:any, rule:Rule):boolean{
     }
     return true
 }
+
+type Formatter = 'MMMM/mm/dd'|'MMMM-mm-dd'
+export function formatDate(time:Date|string, formatter:Formatter){
+
+    let date = new Date(time)
+    if(!date)return ''
+    return formatter.replace('MMMM',date.getFullYear()+'').replace('mm',date.getMonth()+1+'').replace('dd',date.getDate()+'')
+}

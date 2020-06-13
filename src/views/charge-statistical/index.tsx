@@ -1,12 +1,5 @@
 import React from 'react';
-// import { makeStyles, createStyles, Theme, } from '@material-ui/core/styles';
-import Alert from '@material-ui/lab/Alert';
-import CloseIcon from '@material-ui/icons/Close';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import { TextField, Button, Grid, Paper, Chip, IconButton, Divider, Typography } from '@material-ui/core';
-import ConvexCard from '@src/components/convex-card'
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import { TextField, Button, Grid, Paper, Typography } from '@material-ui/core';
 import { $notify } from '@src/views/container-store';
 import LineChart,{LineProps} from '@src/components/charts/line'
 import PieChart,{PieProps} from '@src/components/charts/Pie'
@@ -17,14 +10,7 @@ import {
     deleteChargeToday,
     ChargeToday
 } from '@src/api/charge'
-import ChargeTable from './components/table'
-import {
-    Categories,
-    fieldTypes,
-    fieldLabels,
-    Form,
-    ChargeForm
-} from './types'
+
 import './index.styl'
 
 
@@ -43,6 +29,7 @@ export default class CenteredGrid extends React.Component<any, State> {
             endDate: new Date(),
             totalAndProfitProps:{
                 legend:['收入','利润'],
+                height:'323px',
                 xAxis:['2020/03/03','2020/03/03','2020/03/03'],
                 data:[
                     [11,11,11],
@@ -76,7 +63,7 @@ export default class CenteredGrid extends React.Component<any, State> {
     render() {
         const { startDate, endDate,totalPieProps,
             profitPieProps,totalAndProfitProps } = this.state
-        return (
+            return (
             <div className='root'>
 
                 <Grid container spacing={2}>
@@ -112,8 +99,6 @@ export default class CenteredGrid extends React.Component<any, State> {
                             <Typography className='primary-color weight600' >
                                 收入与利润曲线
                             </Typography>
-                            <Divider />
-                            
                             <LineChart  {...totalAndProfitProps} />
                         </Paper>
                     </Grid>

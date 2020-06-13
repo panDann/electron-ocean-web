@@ -48,8 +48,15 @@ export default function BasicTextFields() {
     return (
         <Card onKeyDownCapture={({ keyCode }: React.KeyboardEvent) => keyCode == 13 && handelLogin()} className={`absolute-center flex-column ${classes.card}`}>
             <form className={` flex-column ${classes.root}`} autoComplete="on">
-                <TextField id="username" autoFocus value={state.form.username}  onChange={({ target: { value } }) => state.form.username = value} required label="用户名" variant="outlined" />
-                <TextField id="password" type='password' value={state.form.password}  onChange={({ target: { value } }) => state.form.password = value} required label="密码" variant="outlined" />
+                <TextField id="username" autoFocus      
+                 value={state.form.username} 
+                 onChange={({ target: { value } }) =>  { setState({ ...state, form:{...state.form,username:value} })}} required
+                 label="用户名" variant="outlined" />
+                 
+                <TextField id="password" type='password'
+                 value={state.form.password}  
+                 onChange={({ target: { value } }) => { setState({ ...state, form:{...state.form,password:value} })}} required
+                 label="密码" variant="outlined" />
             </form>
             <div className='flex-row justify-between width50'>
                 <Button variant="contained" size='large' color="primary" onClick={handelLogin} >登录</Button>

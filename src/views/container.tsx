@@ -38,10 +38,10 @@ export default class Container extends React.Component {
         </HashRouter>
         return res
     }
-    componentDidMount() {
-        // console.log(111,this.notifyRef.current);
+    // componentDidMount() {
+    //     // console.log(111,this.notifyRef.current);
 
-    }
+    // }
 
 }
 

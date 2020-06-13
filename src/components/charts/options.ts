@@ -1,6 +1,6 @@
-import { EChartOption } from 'echarts'
-import {$primaryColor,$successColor,$warningColor,$errorColor}  from '@src/styles/variables.json'
-const color = [$successColor,$warningColor,$errorColor]
+import echarts, { EChartOption } from 'echarts'
+import {$primaryColor,$warningColor}  from '@src/styles/variables.json'
+const color = ['#CCFF99',$warningColor,]
 
 export interface LineProp {
     title?: string
@@ -55,7 +55,20 @@ export const createLineOption = ({ title, legend, xAxis, data }: LineProp): ECha
                 name: el,
                 type: 'line',
                 // stack: '总量',
-                areaStyle: {},
+                areaStyle: {
+                    color: {
+                        type: 'linear',
+                        x: 1,
+                        y: 0,
+                        x2: 0,
+                        y2: 0,
+                        colorStops: [{
+                            offset: 0, color: $primaryColor // 0% 处的颜色
+                        }, {
+                            offset: 1, color: $warningColor // 100% 处的颜色
+                        }],
+                    }
+                },
                 data: data[index]
             }))
 
