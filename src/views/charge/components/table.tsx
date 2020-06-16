@@ -11,17 +11,19 @@ import {
 } from '@src/api/charge'
 // import { Button } from '@material-ui/core';
 interface Column {
-  prop: 'number' | 'name' | 'total' | 'profit'|'delete'
+  prop: 'number' | 'name' | 'total' | 'profit'|'delete'|'rate'
   label: string;
   minWidth?: number;
   align?: 'center';
+  render?:Function
 }
 
 const columns: Column[] = [
-  { prop: 'number', label: '账务编号', minWidth: 50 },
+  { prop: 'number', label: '编号', minWidth: 50 },
   { prop: 'name', label: '账务类别', minWidth: 100 },
   { prop: 'total', label: '营收', minWidth: 50 },
   { prop: 'profit', label: '利润', minWidth: 50 },
+  { prop: 'rate', label: '利润率', minWidth: 50 },
   { prop: 'delete', label: '操作', minWidth: 80 },
 ];
 
@@ -62,7 +64,7 @@ export default function StickyHeadTable({rows,deleteItem}:{rows:ChargeToday[],de
                   {columns.map((column,index) => {
                     return (
                       <TableCell key={index}  align='center'>
-                         {
+                         {   
                              column.prop == 'delete'? <Button color='secondary' onClick={()=>deleteItem(row.id)}>删除</Button>: <span className={`${column.prop=='profit'&&'success-color'}`}>{row[column.prop]}</span>
                          }
                       </TableCell>

@@ -19,6 +19,8 @@ import RightHeader from '@src/views/app-con/conponents/right-header'
 import { isFoldMenuStorage } from '@src/views/consts/localStorage-variables'
 // import Grow from '@material-ui/core/Grow';
 import { $menuFoldWidth, $menuWidth } from "@src/styles/variables.json";
+
+import {pageTitleMap} from '@src/views/routes/path'
 import './app.styl'
 
 interface IState {
@@ -41,7 +43,7 @@ class App extends React.Component<any, IState> {
             activeItemIndex: path2index.get(pathname)||'',
             isFoldMenu: !!localStorage.getItem(isFoldMenuStorage) || false,
             isHiddenBar: false,
-            appBarTitle:'记账'
+            appBarTitle:pageTitleMap.get(pathname)||'标题'
         }
     }
 
@@ -65,7 +67,7 @@ class App extends React.Component<any, IState> {
             <div className='flex-row'>
                 {/* {<Redirect  to={items[0].path}> </Redirect>} */}
                 <Paper className='side_con border-box' style={{ width: isFoldMenu ? $menuFoldWidth : $menuWidth }}>
-                    <MenuList autoFocusItem variant='selectedMenu'>
+                    <MenuList  variant='selectedMenu'>
                         {items.map((el, index: number) =>
                             <MenuItem
                                 key={el.path} onClick={() => this.leapTo(el, index)}

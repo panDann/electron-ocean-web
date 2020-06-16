@@ -7,9 +7,12 @@ import { TextField, Button, Grid, Paper, Dialog, IconButton } from '@material-ui
 import ConvexCard from '@src/components/convex-card'
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import {$notify} from '@src/views/container-store';
+import { $notify } from '@src/views/container-store';
 
-import { getCategory, addCategory, deleteCategory, Category,
+import { formatDate } from '@src/utils/tool'
+
+import {
+    getCategory, addCategory, deleteCategory, Category,
     addChargeToday,
     getChargeToday,
     deleteChargeToday,
@@ -25,7 +28,6 @@ import {
 } from './types'
 import './index.styl'
 
-const currentCategoryPage = 1
 
 interface State {
     chargeCategories: Category[]
@@ -53,7 +55,7 @@ export default class CenteredGrid extends React.Component<any, State> {
             // ...DialogContent(this.handleSubmit)
             dialogVisible: false
         }
-       this.handleChargeFormSubmit.bind(this)
+        this.handleChargeFormSubmit.bind(this)
     }
     componentWillMount() {
         this.getCategoryData()
@@ -74,18 +76,20 @@ export default class CenteredGrid extends React.Component<any, State> {
         await deleteCategory(id) && this.getCategoryData()
     }
     // charge today
-    async   getChargeTodayData(page = 1, limit = 30) {
-        let res: any = await  getChargeToday(page, limit)
+    async   getChargeTodayData(page = 1, limit = 100) {
+        let date = new Date()
+        let res: any = await getChargeToday(page, limit, formatDate(date, 'MMMM/mm/dd'),
+                                            formatDate(new Date(date.getTime() + 86400000), 'MMMM/mm/dd'))
         this.setState({ todayCharges: res || [] })
         return !!res
     }
 
     async  handleChargeFormSubmit() {
-        const { chargeForm,chargeCategories } = this.state
-        if(!matchCategoryName(chargeForm,chargeCategories))return
+        const { chargeForm, chargeCategories } = this.state
+        if (!matchCategoryName(chargeForm, chargeCategories)) return
 
-        await addChargeToday(chargeForm) && this.getChargeTodayData() 
-        && this.setState({chargeForm:{name:'',number:'',total:'',profit:''}})
+        await addChargeToday(chargeForm) && this.getChargeTodayData()
+            && this.setState({ chargeForm: { name: '', number: '', total: '', profit: '' } })
     }
     async deleteChargeTodayItem(id: number) {
         await deleteChargeToday(id) && this.getChargeTodayData()
@@ -111,7 +115,7 @@ export default class CenteredGrid extends React.Component<any, State> {
                             </Grid>
                         </Paper>
                     </Grid>
-                    <Grid item xs={6} key='category-con'>
+                    <Grid item xs={4} key='category-con'>
                         <ConvexCard header={
                             <Grid className='charge-cat-con'>
                                 账务类别
@@ -159,9 +163,9 @@ export default class CenteredGrid extends React.Component<any, State> {
                           </Button>
                         </DialogActions>
                     </Dialog>
-                    <Grid item xs={6} key='today-con'>
+                    <Grid item xs={8} key='today-con'>
                         <ConvexCard header='今日记账' color='success'>
-                            <ChargeTable rows={todayCharges}  deleteItem={this.deleteChargeTodayItem.bind(this)}/>
+                            <ChargeTable rows={todayCharges} deleteItem={this.deleteChargeTodayItem.bind(this)} />
                         </ConvexCard>
                     </Grid>
                 </Grid>
@@ -184,8 +188,8 @@ function transpondEnter(_this: any, type: string) {
     if (e.keyCode && e.keyCode === 13) {
         switch (type) {
             case refTypes[0]:
-                    const { chargeForm,chargeCategories } = _this.state
-                    if(!matchCategoryName(chargeForm,chargeCategories))return
+                const { chargeForm, chargeCategories } = _this.state
+                if (!matchCategoryName(chargeForm, chargeCategories)) return
                 refs[refTypes[1]].focus()
                 break
             case refTypes[1]:
@@ -199,11 +203,11 @@ function transpondEnter(_this: any, type: string) {
         }
     }
 }
-function matchCategoryName(chargeForm:ChargeForm,chargeCategories:Category[]) {
-    let matchNumber = chargeCategories.find((el:Category)=>el.number == chargeForm.number)
-    if(matchNumber){
+function matchCategoryName(chargeForm: ChargeForm, chargeCategories: Category[]) {
+    let matchNumber = chargeCategories.find((el: Category) => el.number == chargeForm.number)
+    if (matchNumber) {
         chargeForm.name = matchNumber.name
-    }else {
+    } else {
         $notify('无此编号账务')
         return false
     }

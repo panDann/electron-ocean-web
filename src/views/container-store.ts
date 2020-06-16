@@ -6,11 +6,14 @@ import { tokenStorage } from '@src/views/consts/localStorage-variables';
 
 export class ConStore {
     @observable isLoading = false
-    @observable isNotify = false
+    // @observable isNotify = false
     @observable hasLogined = !!localStorage.getItem(tokenStorage)
     @observable notifyMsg = ''
     @observable notifyType:Color = 'error'
     @observable notifyShow = false
+
+    @observable pageTitle = ''
+
     @action showLoading = ()=>{
         this.isLoading = true
     }
@@ -23,9 +26,9 @@ export class ConStore {
         this.notifyType = type || 'error'
     }
    
-    @action notifyClose = ()=>{
-        this.notifyShow = false
-    }
+    // @action notifyClose = ()=>{
+    //     this.notifyShow = false
+    // }
    
 }
 
@@ -42,4 +45,7 @@ export const $loading = (val:boolean)=>{
 
 export const $setHasLogined = (val:boolean)=>{
     Store.hasLogined = val
+}
+export const $setPageTitle = (val:string)=>{
+    Store.pageTitle = val
 }

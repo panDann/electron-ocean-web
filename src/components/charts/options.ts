@@ -1,6 +1,6 @@
 import echarts, { EChartOption } from 'echarts'
-import {$primaryColor,$warningColor}  from '@src/styles/variables.json'
-const color = ['#CCFF99',$warningColor,]
+import {$primaryColor,$warningColor,$errorColor,$secondaryColor,$successColor}  from '@src/styles/variables.json'
+const color = [$primaryColor,$warningColor,$errorColor,$secondaryColor,$successColor]
 
 export interface LineProp {
     title?: string
@@ -113,9 +113,9 @@ export const createPieOption = ({ title, legend, data }: PieProp): EChartOption 
                 type: 'pie',
                 radius: ['50%','70%'],
                 center: ['40%', '60%'],
-                label: {
-                    position: 'inner'
-                },
+                // label: {
+                //     position: 'inner'
+                // },
                 data: data,
                 emphasis: {
                     itemStyle: {

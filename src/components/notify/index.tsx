@@ -26,7 +26,12 @@ export default function Notify() {
     }
 
     return <div className={classes.root} >
-    <Snackbar open={ConStore.notifyShow} autoHideDuration={3000} onClose={handleClose}>
+    <Snackbar open={ConStore.notifyShow}
+     anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'left',
+      }}
+    autoHideDuration={3000} onClose={handleClose}>
         <Alert onClose={handleClose} severity={ConStore.notifyType}>
             {ConStore.notifyMsg}
         </Alert>

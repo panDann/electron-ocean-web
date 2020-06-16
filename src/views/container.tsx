@@ -29,7 +29,7 @@ export default class Container extends React.Component {
                         <Route path={homePath} render={() =>
                             <App>
                                 {
-                                    Routes.map((el, index) => <Route path={el.path} key={index} exact component={el.component} />)
+                                    Routes.map((el, index) => <Route  path={el.path} key={index} exact component={el.component} />)
                                 }
                             </App>
                         } />

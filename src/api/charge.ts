@@ -50,7 +50,9 @@ export interface ChargeToday {
     name: string,
     total: number,
     profit: number,
-    createTime: Date,
+    createTime: string,
+    date?: string,
+    rate?: string,
 }
 
 
@@ -83,9 +85,8 @@ export const addChargeToday = async (data: Record<string, any>) => {
 }
 
 
-export const getChargeToday = (page: number, limit: number) => {
-
-    return Request<ChargeToday>(todayUrl + `?page=${page}&limit=${limit}`, { method: 'GET' })
+export const getChargeToday = (page: number, limit: number ,startDate:string,endDate:string) => {
+    return Request<ChargeToday[]>(todayUrl + `?page=${page}&limit=${limit}&startDate=${startDate}&endDate=${endDate}`, { method: 'GET' })
 }
 
 
